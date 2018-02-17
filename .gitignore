@@ -1,0 +1,5 @@
+*.log
+*.tgz
+*.tmproj
+.DS_Store
+node_modules
