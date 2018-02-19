@@ -45,12 +45,6 @@ var state = {
     text: ''
 }
 
-function hasClass(el, cl)
-{
-    return el && el.className === cl;
-    return new RegExp('(^|\\s+)' + cl + '(\\s+|$)').test(el.className);
-}
-
 function changeWord()
 {
     state.word = words[Math.floor(Math.random() * len)];
@@ -87,7 +81,7 @@ function change(e)
 
     switch (true)
     {
-        case hasClass(card, "word"):
+        case card.className === "word":
             if (isReversed){
                 changeWord();
             }
@@ -96,7 +90,7 @@ function change(e)
         break;
 
         default:
-        case hasClass(card, "def"):
+        case card.className === "def":
             if (!state.reversed){
                 changeWord();
             }
