@@ -79,24 +79,21 @@ function change(e)
         e.preventDefault();
     }
 
-    switch (true)
+    if (card.className === "word")
     {
-        case card.className === "word":
-            if (isReversed){
-                changeWord();
-            }
-            setDef();
-            state.reversed = isReversed;
-        break;
-
-        default:
-        case card.className === "def":
-            if (!state.reversed){
-                changeWord();
-            }
-            setWord();
-            state.reversed = false;
-        break;
+        if (isReversed) {
+            changeWord();
+        }
+        setDef();
+        state.reversed = isReversed;
+    }
+    else
+    {
+        if (!state.reversed) {
+            changeWord();
+        }
+        setWord();
+        state.reversed = false;
     }
 
     card.innerHTML = "<p>" + state.text + "</p>";
