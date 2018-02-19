@@ -36,9 +36,78 @@
 <script>
 "use strict";
 (function(){
-var data = {};
+var defs = {};
 var words = [];
 var len;
+var state = {
+    reverse: false,
+    cl: '',
+    text: ''
+}
+
+function hasClass(el, cl)
+{
+    return el && el.className === cl;
+    return new RegExp('(^|\\s+)' + cl + '(\\s+|$)').test(el.className);
+}
+
+function changeWord()
+{
+    state.word = words[Math.floor(Math.random() * len)];
+}
+
+function setWord()
+{
+    state.text = state.word;
+    state.cl = "word";
+}
+
+function setDef()
+{
+    state.text = defs[state.word];
+    state.cl = "def";
+}
+
+function change(e)
+{
+    var text;
+    var card = document.getElementById("card");
+
+    // a touch event will be fired for every finger down!
+    var touchNum = e && e.touches && e.touches.length;
+
+    // but we only care about two fingers down, so ignore all the rest
+    var isReversed = touchNum === 1;
+    if (touchNum !== undefined && !isReversed) { return; }
+
+    // prevent simulated click to avoid double processing
+    if (e && e.type === "touchend") {
+        e.preventDefault();
+    }
+
+    switch (true)
+    {
+        case hasClass(card, "word"):
+            if (isReversed){
+                changeWord();
+            }
+            setDef();
+            state.reversed = isReversed;
+        break;
+
+        default:
+        case hasClass(card, "def"):
+            if (!state.reversed){
+                changeWord();
+            }
+            setWord();
+            state.reversed = false;
+        break;
+    }
+
+    card.innerHTML = "<p>" + state.text + "</p>";
+    card.className = state.cl;
+}
 
 function parse(tsv)
 {
@@ -47,40 +116,21 @@ function parse(tsv)
     for (var l=0, ll=lines.length, line; l<ll; l++)
     {
         line = lines[l].replace(/^\s+|\s+$/g, '').split("\t");
-        data[line[0]] = line[1];
+        defs[line[0]] = line[1];
         words[l] = line[0];
     }
     len = words.length;
     change();
 }
 
-function change()
+window.addEventListener("load", function()
 {
-    var cl;
-    var text;
-    var card = document.getElementById("card");
-    
-    if (card.className !== "word")
-    {
-        change.word = text = words[Math.floor(Math.random() * len)];
-        cl = "word";
-    }
-    else
-    {
-        text = data[change.word];
-        cl = "def";
-    }
-    
-    card.innerHTML = "<p>" + text + "</p>";
-    card.className = cl;
-}
-change.word = "";
-
-window.addEventListener("load", function() {
     document.addEventListener("click", change);
+    document.addEventListener("touchend", change);
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv", true);
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function()
+    {
         if (xhr.readyState == 4) {
             parse(xhr.responseText);
         }
