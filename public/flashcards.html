@@ -17,6 +17,7 @@
 #card {
     width:400px;
     height:200px;
+    position: relative;
     display:table-cell;
     vertical-align:middle;
     text-align:center;
@@ -26,6 +27,7 @@
     font-family:georgia;
     font-size:16px;
 }
+.def .word { position: absolute; bottom: 12px; right: 14px; margin: 0; font-weight:bold; color:#ccc; }
 /*
 .def { transform: rotateY(180deg) translateX(-100%); transition: 0.6s; transform-origin: left center; }
 .def p { transform: rotateY(180deg); transition: 0.6s; }
@@ -56,9 +58,9 @@ function setWord()
     state.cl = "word";
 }
 
-function setDef()
+function setDef(incWord)
 {
-    state.text = defs[state.word];
+    state.text = defs[state.word] + (incWord ? "<p class=word>" + state.word + "</p>" : "");
     state.cl = "def";
 }
 
@@ -84,7 +86,7 @@ function change(e)
         if (isReversed) {
             changeWord();
         }
-        setDef();
+        setDef(!isReversed);
         state.reversed = isReversed;
     }
     else
