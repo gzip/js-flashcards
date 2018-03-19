@@ -112,12 +112,19 @@ function change(e)
 function parse(tsv)
 {
     var lines = tsv.split("\n");
+    var WORD = 0;
+    var DEF = 1;
+    var SKIP = 3;
     //lines.sort();
     for (var l=0, ll=lines.length, line; l<ll; l++)
     {
         line = lines[l].replace(/^\s+|\s+$/g, '').split("\t");
-        defs[line[0]] = line[1];
-        words[l] = line[0];
+        if (line[SKIP]) {
+            //console.log('skipped', line[WORD], line[DEF])
+            continue;
+        }
+        defs[line[WORD]] = line[DEF];
+        words[words.length] = line[WORD];
     }
     len = words.length;
     change();
