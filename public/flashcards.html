@@ -66,6 +66,23 @@ function setDef(incWord)
     state.cl = "def";
 }
 
+function parseQuery(str)
+{
+    var q;
+    var params = {};
+    var query = str || location.href.split(/[?#]/)[1];
+
+    if (query) {
+        query = query.split(/&/);
+        for (q in query) {
+            q = query[q].split(/=/);
+            params[decodeURIComponent(q[0])] = decodeURIComponent(q[1] || '') || 1;
+        }
+    }
+
+    return params;
+}
+
 function change(e)
 {
     var text;
@@ -112,17 +129,21 @@ function change(e)
 function parse(tsv)
 {
     var lines = tsv.split("\n");
+    var params = parseQuery();
+    var category = params.category;
     var WORD = 0;
     var DEF = 1;
+    var CATEGORY = 2;
     var SKIP = 3;
     //lines.sort();
     for (var l=0, ll=lines.length, line; l<ll; l++)
     {
         line = lines[l].replace(/^\s+|\s+$/g, '').split("\t");
-        if (line[SKIP]) {
+        if (line[SKIP] || (line[CATEGORY] !== category)) {
             //console.log('skipped', line[WORD], line[DEF])
             continue;
         }
+        //if(defs[line[WORD]]) { console.log('duplicate', line[WORD], line[DEF]); }
         defs[line[WORD]] = line[DEF];
         words[words.length] = line[WORD];
     }
