@@ -139,13 +139,16 @@ function parse(tsv)
     for (var l=0, ll=lines.length, line; l<ll; l++)
     {
         line = lines[l].replace(/^\s+|\s+$/g, '').split("\t");
-        if (line[SKIP] || (line[CATEGORY] !== category)) {
+        if (line[SKIP] || (category && line[CATEGORY] !== category)) {
             //console.log('skipped', line[WORD], line[DEF])
             continue;
         }
-        //if(defs[line[WORD]]) { console.log('duplicate', line[WORD], line[DEF]); }
-        defs[line[WORD]] = line[DEF];
-        words[words.length] = line[WORD];
+        
+        if(!defs[line[WORD]])
+        {
+            defs[line[WORD]] = line[DEF];
+            words[words.length] = {val: line[WORD], time: 0};
+        } //else console.log('duplicate', line[WORD], line[DEF]);
     }
     len = words.length;
     change();
