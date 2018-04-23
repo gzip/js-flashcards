@@ -36,8 +36,8 @@
 </style>
 
 <script>
-"use strict";
 (function(){
+"use strict";
 var defs = {};
 var words = [];
 var lines = [];
@@ -45,7 +45,7 @@ var state = {
     reverse: false,
     cl: '',
     text: ''
-}
+};
 
 function changeWord()
 {
@@ -135,7 +135,6 @@ function parse(tsv)
         entry = entries[e].replace(/^\s+|\s+$/g, '').split("\t");
         lines.push(entry);
     }
-    console.log('lines', lines.length)
     //lines.sort();
 }
 
@@ -164,7 +163,7 @@ function filter()
         {
             defs[line[WORD]] = line[DEF];
             words[words.length] = line[WORD];
-        } else console.log('duplicate', line[WORD], line[DEF]);
+        } //else console.log('duplicate', line[WORD], line[DEF]);
     }
     shuffle(words);
     change();
@@ -196,11 +195,11 @@ window.addEventListener("load", function()
             parse(xhr.responseText);
             filter();
         }
-    }
+    };
     xhr.send();
 });
 
-})()
+})();
 </script>
 </head>
 
