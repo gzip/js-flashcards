@@ -97,7 +97,6 @@ function parseQuery(str)
 
 function change(e)
 {
-    var text;
     var card = document.getElementById("card");
     
     // ignore certain clicks
@@ -161,6 +160,7 @@ function filter()
 {
     var params = parseQuery();
     var category = params.category;
+    var all = params.all;
     
     // clear out words and definitions
     defs = {};
@@ -170,7 +170,7 @@ function filter()
     {
         line = lines[l];
         
-        if (line[SKIP] || (category && category !== line[CATEGORY])) {
+        if ((line[SKIP] && !all) || (category && category !== line[CATEGORY])) {
             //console.log('skipped', line.join("\t"))
             continue;
         }
