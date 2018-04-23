@@ -38,6 +38,13 @@
 <script>
 (function(){
 "use strict";
+
+// define column numbers
+var WORD = 0;
+var DEF = 1;
+var CATEGORY = 2;
+var SKIP = 3;
+
 var defs = {};
 var words = [];
 var lines = [];
@@ -49,7 +56,11 @@ var state = {
 
 function changeWord()
 {
-    var i = Math.floor(Math.random() * words.length);
+    var len = words.length;
+    var i = Math.floor(Math.random() * len);
+    if (len === 0) {
+        filter();
+    }
     state.word = words.splice(i, 1);
 }
 
@@ -130,11 +141,19 @@ function change(e)
 function parse(tsv)
 {
     var entries = tsv.split("\n");
+    var categories = [];
     for (var e = 0, el = entries.length, entry; e < el; e++)
     {
         entry = entries[e].replace(/^\s+|\s+$/g, '').split("\t");
         lines.push(entry);
+        
+        // store categories
+        if (entry[CATEGORY] && categories.indexOf(entry[CATEGORY]) === -1) {
+            categories.push(entry[CATEGORY]);
+        }
     }
+    categories.sort();
+    //console.log(categories)
     //lines.sort();
 }
 
@@ -142,10 +161,6 @@ function filter()
 {
     var params = parseQuery();
     var category = params.category;
-    var WORD = 0;
-    var DEF = 1;
-    var CATEGORY = 2;
-    var SKIP = 3;
     
     // clear out words and definitions
     defs = {};
@@ -154,7 +169,8 @@ function filter()
     for (var l = 0, ll = lines.length, line; l < ll; l++)
     {
         line = lines[l];
-        if (line[SKIP] || (category && line[CATEGORY] !== category)) {
+        
+        if (line[SKIP] || (category && category !== line[CATEGORY])) {
             //console.log('skipped', line.join("\t"))
             continue;
         }
