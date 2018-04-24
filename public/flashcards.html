@@ -97,7 +97,7 @@ function parseQuery(str)
     return params;
 }
 
-function change(e)
+function change(e, isReversed)
 {
     var card = document.getElementById("card");
     
@@ -105,19 +105,7 @@ function change(e)
     if (e && e.target && e.target.className === "cancel") {
         return;
     }
-
-    // a touch event will be fired for every finger down!
-    var touchNum = e && e.touches && e.touches.length;
-
-    // but we only care about two fingers down, so ignore all the rest
-    var isReversed = touchNum === 1;
-    if (touchNum !== undefined && !isReversed) { return; }
-
-    // prevent simulated click to avoid double processing
-    if (e && e.type === "touchend") {
-        e.preventDefault();
-    }
-
+    
     if (card.className.indexOf("word") !== -1)
     {
         if (isReversed) {
@@ -139,6 +127,23 @@ function change(e)
 
     card.innerHTML = "<p>" + state.text + "</p>";
     card.className = state.cl + (isReversed ? " reversed" : "");
+}
+
+function handleTouch(e)
+{
+    // a touch event will be fired for every finger down!
+    var touchNum = e && e.touches && e.touches.length;
+
+    // but we only care about two fingers down, so ignore all the rest
+    var isReversed = touchNum === 1;
+    if (touchNum !== undefined && !isReversed) { return; }
+
+    // prevent simulated click to avoid double processing
+    if (e && e.type === "touchend") {
+        e.preventDefault();
+    }
+
+    change(null, true);
 }
 
 function parse(tsv)
@@ -205,7 +210,7 @@ function shuffle(a)
 window.addEventListener("load", function()
 {
     document.addEventListener("click", change);
-    document.addEventListener("touchend", change);
+    document.addEventListener("touchend", handleTouch);
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv", true);
     xhr.onreadystatechange = function()
@@ -224,8 +229,7 @@ window.addEventListener("keypress", function(e)
     switch (e && e.code)
     {
         case "BracketLeft":
-            // treat it like a multitouch event
-            change({touches: [1]});
+            change(null, true);
         break;
         case "Space":
         case "Enter":
