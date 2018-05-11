@@ -47,6 +47,7 @@ var DEF = 1;
 var CATEGORY = 2;
 var SKIP = 3;
 
+var params = parseQuery();
 var defs = {};
 var words = [];
 var lines = [];
@@ -167,9 +168,9 @@ function parse(tsv)
 
 function filter()
 {
-    var params = parseQuery();
     var category = params.category;
     var all = params.all;
+    var debug = params.debug;
     
     // clear out words and definitions
     defs = {};
@@ -180,7 +181,9 @@ function filter()
         line = lines[l];
         
         if ((line[SKIP] && !all) || (category && category !== line[CATEGORY])) {
-            //console.log('skipped', line.join("\t"))
+            if (debug) {
+                console.log('skipping: ', line.join("\t"));
+            }
             continue;
         }
         
@@ -188,7 +191,11 @@ function filter()
         {
             defs[line[WORD]] = line[DEF];
             words[words.length] = line[WORD];
-        } //else console.log('duplicate', line[WORD], line[DEF]);
+        }
+        else if (debug)
+        {
+            console.log('found duplicate: ', line[WORD], line[DEF]);
+        }
     }
     shuffle(words);
     change();
@@ -212,7 +219,8 @@ window.addEventListener("load", function()
     document.addEventListener("click", change);
     document.addEventListener("touchend", handleTouch);
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv", true);
+    var url = params.data_url || "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
+    xhr.open("GET", url, true);
     xhr.onreadystatechange = function()
     {
         if (xhr.readyState == 4)
