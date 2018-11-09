@@ -27,7 +27,8 @@
     font-family:georgia;
     font-size:16px;
 }
-.def .word a { position: absolute; bottom: 12px; right: 14px; margin: 0; font-weight:bold; text-decoration: none; color:#ccc; }
+.links { position: absolute; bottom: 12px; right: 14px; margin: 0; text-align: right; }
+.links a { font-weight:bold; text-decoration: none; color:#ccc; }
 /*
 .def { transform: rotateY(180deg) translateX(-100%); transition: 0.6s; transform-origin: left center; }
 .def p { transform: rotateY(180deg); transition: 0.6s; }
@@ -78,9 +79,19 @@ function setWord()
 
 function setDef(incWord)
 {
-    state.text = defs[state.word] + (incWord ?
-        '<p class=word><a href="https://translate.google.com/#es/en/' +
-        encodeURIComponent(state.word) + '" target="def" class="cancel">' + state.word + "</a></p>" : "");
+    state.text = defs[state.word] + (incWord ? [
+        '<p class="word links">',
+            '<a href="https://translate.google.com/#es/en/', encodeURIComponent(state.word),
+                '" target="def" class="cancel">',
+                state.word,
+            '</a>',
+            ' ',
+            '<a href="http://www.spanishdict.com/translate/', encodeURIComponent(state.word),
+                '" target="sd" class="cancel">',
+                '¡!',
+            '</a>',
+        '</p>'
+        ].join("") : "");
     state.cl = "def";
 }
 
