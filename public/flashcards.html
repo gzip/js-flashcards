@@ -233,7 +233,7 @@ window.addEventListener("load", function()
     document.addEventListener("click", change);
     document.addEventListener("touchend", handleTouch);
     var xhr = new XMLHttpRequest();
-    var url = params.data_url || "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
+    var url = params.data_url || "https://cors-anywhere.herokuapp.com/https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
     xhr.open("GET", url, true);
     xhr.onreadystatechange = function()
     {
