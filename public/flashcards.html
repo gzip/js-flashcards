@@ -115,12 +115,12 @@ function parseQuery(str)
 function change(e, isReversed)
 {
     var card = document.getElementById("card");
-    
+
     // ignore certain clicks
     if (e && e.target && e.target.className === "cancel") {
         return;
     }
-    
+
     if (card.className.indexOf("word") !== -1)
     {
         if (isReversed) {
@@ -165,11 +165,17 @@ function parse(tsv)
 {
     var entries = tsv.split("\n");
     var categories = [];
+    var start = parseInt(params.start);
+    if (start) {
+        // adjust start for zero index but also allow negative numbers for slice
+        if (start > 0) { --start; }
+        entries = entries.slice(start);
+    }
     for (var e = 0, el = entries.length, entry; e < el; e++)
     {
         entry = entries[e].replace(/^\s+|\s+$/g, '').split("\t");
         lines.push(entry);
-        
+
         // store categories
         if (entry[CATEGORY] && categories.indexOf(entry[CATEGORY]) === -1) {
             categories.push(entry[CATEGORY]);
@@ -185,22 +191,22 @@ function filter()
     var category = params.category;
     var all = params.all;
     var debug = params.debug;
-    
+
     // clear out words and definitions
     defs = {};
     words = [];
-    
+
     for (var l = 0, ll = lines.length, line; l < ll; l++)
     {
         line = lines[l];
-        
+
         if ((line[SKIP] && !all) || (category && category !== line[CATEGORY])) {
             if (debug) {
                 console.log('skipping: ', line.join("\t"));
             }
             continue;
         }
-        
+
         if(!defs[line[WORD]])
         {
             defs[line[WORD]] = line[DEF];
