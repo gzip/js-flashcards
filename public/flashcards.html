@@ -165,12 +165,23 @@ function parse(tsv)
 {
     var entries = tsv.split("\n");
     var categories = [];
-    var start = parseInt(params.start);
+
+    // handle optional start parameter
+    var start = parseInt(params.start) || 0;
     if (start) {
         // adjust start for zero index but also allow negative numbers for slice
         if (start > 0) { --start; }
-        entries = entries.slice(start);
     }
+
+    // handle optional count and end parameters; count takes precedence over end
+    var count = parseInt(params.count) || 0;
+    var end = count ? start + count : parseInt(params.end) || entries.length;
+
+    // get a subset if start, count, or end was passed in
+    if (start !== 0 || end !== entries.length) {
+        entries = entries.slice(start, end);
+    }
+
     for (var e = 0, el = entries.length, entry; e < el; e++)
     {
         entry = entries[e].replace(/^\s+|\s+$/g, '').split("\t");
