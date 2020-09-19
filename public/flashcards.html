@@ -250,8 +250,16 @@ window.addEventListener("load", function()
     document.addEventListener("click", change);
     document.addEventListener("touchend", handleTouch);
     var xhr = new XMLHttpRequest();
-    var url = params.data_url || "https://cors-anywhere.herokuapp.com/https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
-    xhr.open("GET", url, true);
+    var url;
+    switch (params.list)
+    {
+        case "b":
+            url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7x5yIEIi0HI8SaPXbF3AiukfnbLECqfIC3062w3tMCJkqoqjfGFZwy__U2j5vFrCSLPawGlOWl7Wa/pub?output=tsv";
+        break;
+        default:
+            url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
+    }
+    xhr.open("GET", "https://cors-anywhere.herokuapp.com/" + url, true);
     xhr.onreadystatechange = function()
     {
         if (xhr.readyState == 4)
