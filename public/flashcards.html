@@ -175,7 +175,7 @@ function parse(tsv)
 
     // handle optional count and end parameters; count takes precedence over end
     var count = parseInt(params.count) || 0;
-    var end = count ? start + count : parseInt(params.end) || entries.length;
+    var end = (start + count ? start + count : parseInt(params.end)) || entries.length;
 
     // get a subset if start, count, or end was passed in
     if (start !== 0 || end !== entries.length) {
