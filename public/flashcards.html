@@ -54,6 +54,7 @@ var SKIP = 3;
 var params = parseQuery();
 var defs = {};
 var words = [];
+var categories = [];
 var lines = [];
 var state = {
     reverse: false,
@@ -164,23 +165,6 @@ function handleTouch(e)
 function parse(tsv)
 {
     var entries = tsv.split("\n");
-    var categories = [];
-
-    // handle optional start parameter
-    var start = parseInt(params.start) || 0;
-    if (start) {
-        // adjust start for zero index but also allow negative numbers for slice
-        if (start > 0) { --start; }
-    }
-
-    // handle optional count and end parameters; count takes precedence over end
-    var count = parseInt(params.count) || 0;
-    var end = (start + count ? start + count : parseInt(params.end)) || entries.length;
-
-    // get a subset if start, count, or end was passed in
-    if (start !== 0 || end !== entries.length) {
-        entries = entries.slice(start, end);
-    }
 
     for (var e = 0, el = entries.length, entry; e < el; e++)
     {
@@ -192,9 +176,8 @@ function parse(tsv)
             categories.push(entry[CATEGORY]);
         }
     }
+
     categories.sort();
-    //console.log(categories)
-    //lines.sort();
 }
 
 function filter()
@@ -202,6 +185,8 @@ function filter()
     var category = params.category;
     var all = params.all;
     var debug = params.debug;
+    var start = parseInt(params.start) || 0;
+    var count = parseInt(params.count) || 0;
 
     // clear out words and definitions
     defs = {};
@@ -228,8 +213,30 @@ function filter()
             console.log('found duplicate: ', line[WORD], line[DEF]);
         }
     }
+
+    // handle optional count and end parameters; count takes precedence over end
+    var end = (count && start + count ? start + count : parseInt(params.end)) || words.length;
+
+    // handle optional start parameter
+    if (start) {
+        // adjust start for zero index but also allow negative numbers for slice
+        if (start > 0) { --start; }
+    }
+
+    // get a subset if start, count, or end was passed in
+    if (start !== 0 || end !== words.length) {
+        words = words.slice(start, end);
+    }
+
     shuffle(words);
     change();
+
+    if (debug)
+    {
+        console.log('categories: ', categories);
+        console.log('words: ', words);
+        console.log('lines: ', lines);
+    }
 }
 
 // from https://bost.ocks.org/mike/shuffle/
