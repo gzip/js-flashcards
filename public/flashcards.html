@@ -220,7 +220,7 @@ function filter()
     // handle optional start parameter
     if (start) {
         // adjust start for zero index but also allow negative numbers for slice
-        if (start > 0) { --start; }
+        if (start !== 0) { --start; }
     }
 
     // get a subset if start, count, or end was passed in
@@ -267,12 +267,24 @@ window.addEventListener("load", function()
             url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
     }
     xhr.open("GET", "https://cors-anywhere.herokuapp.com/" + url, true);
+    xhr.timeout = 3000;
     xhr.onreadystatechange = function()
     {
         if (xhr.readyState == 4)
         {
-            parse(xhr.responseText);
-            filter();
+            var tsv;
+
+            if (xhr.status === 200 && xhr.responseText) {
+                tsv = xhr.responseText;
+                localStorage.tsv = tsv;
+            } else {
+                tsv = localStorage.tsv;
+            }
+
+            if (tsv) {
+                parse(tsv);
+                filter();
+            }
         }
     };
     xhr.send();
