@@ -105,12 +105,29 @@ function parseQuery(str)
     if (query) {
         query = query.split(/&/);
         for (q in query) {
-            q = query[q].split(/=/);
-            params[decodeURIComponent(q[0])] = decodeURIComponent(q[1] || '') || 1;
+            if (query.hasOwnProperty(q)) {
+                q = query[q].split(/=/);
+                params[decodeURIComponent(q[0])] = decodeURIComponent(q[1] || '') || 1;
+            }
         }
     }
 
     return params;
+}
+
+function buildQuery(params)
+{
+    var key,
+        result = '',
+        enc = encodeURIComponent;
+
+    for (key in params) {
+        if (params.hasOwnProperty(key)) {
+            result += (result ? '&' : '') + enc(key) + '=' + enc(params[key]);
+        }
+    }
+
+    return result;
 }
 
 function change(e, isReversed)
@@ -252,6 +269,18 @@ function shuffle(a)
     }
 }
 
+function paginate(inc)
+{
+    var start = params.start;
+    var count = params.count;
+    if (start && count)
+    {
+        params.start = parseInt(start, 10) + (parseInt(count, 10) * (inc ? 1 : -1));
+        location.href = "?" + buildQuery(params);
+        return true;
+    }
+}
+
 window.addEventListener("load", function()
 {
     document.addEventListener("click", change);
@@ -292,13 +321,22 @@ window.addEventListener("load", function()
 
 window.addEventListener("keydown", function(e)
 {
+    var ctrl = e && e.ctrlKey;
     switch (e && e.code)
     {
         case "ArrowLeft":
+            if (ctrl && paginate()) {
+                break;
+            }
+        /* falls through */
         case "BracketLeft":
             change(null, true);
         break;
         case "ArrowRight":
+            if (ctrl && paginate(true)) {
+                break;
+            }
+        /* falls through */
         case "Space":
         case "Enter":
         case "BracketRight":
