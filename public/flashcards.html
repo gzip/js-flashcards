@@ -290,13 +290,15 @@ window.addEventListener("load", function()
     xhr.send();
 });
 
-window.addEventListener("keypress", function(e)
+window.addEventListener("keydown", function(e)
 {
     switch (e && e.code)
     {
+        case "ArrowLeft":
         case "BracketLeft":
             change(null, true);
         break;
+        case "ArrowRight":
         case "Space":
         case "Enter":
         case "BracketRight":
