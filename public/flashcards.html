@@ -295,7 +295,7 @@ window.addEventListener("load", function()
         default:
             url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
     }
-    xhr.open("GET", "https://cors-anywhere.herokuapp.com/" + url, true);
+    xhr.open("GET", "https://gdocs-proxy.herokuapp.com/" + url, true);
     xhr.timeout = 3000;
     xhr.onreadystatechange = function()
     {
