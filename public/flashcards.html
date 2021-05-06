@@ -27,19 +27,59 @@
     font-family:georgia;
     font-size:16px;
 }
+#optsbtn {
+    top:10px;
+    right: 5px;
+    padding: 0 7px;
+    border: 0;
+    color: #bbb;
+    font: 19px arial;
+    cursor:pointer;
+}
+#opts {
+    position: absolute;
+    display: none;
+    width: 370px;
+    height: 160px;
+    top: 30px;
+    left: 20px;
+    background: #fff;
+}
+.options #opts {
+    display: block;
+}
+input, select, label, button { position:absolute; font:12pt arial, sans-serif; color:#ccc; border:1px solid #ccc; border-radius:2px; background-color:#fff; }
+label, button { display:block; }
+label { border:0; }
+input, select {  }
+label[for=category] { left:25pt;top: -3pt; }
+select[name=category] { left:25pt;top: 12pt; }
+label[for=start] { left:25pt;top: 37pt; }
+input[name=start] { left:25pt;top: 52pt; }
+label[for=count] { left: 100pt;top: 37pt; }
+input[name=count] { left: 100pt;top: 52pt; }
+label[for=reverse] { left: 39pt; top: 77pt; }
+input[name=reverse] { left: 22pt; top: 77pt; }
+button[name=submit] { right: 75pt;top: 52pt; }
+.nav { display:block; position:absolute; bottom:50%; font:20pt arial, sans-serif; color:#ccc; cursor:pointer; }
+.prev { left:-15px; }
+.next { right:-5px; }
 .links { position: absolute; bottom: 12px; right: 14px; margin: 0; text-align: right; }
 .links a { font-weight:bold; text-decoration: none; color:#ccc; }
 /*
 .def { transform: rotateY(180deg) translateX(-100%); transition: 0.6s; transform-origin: left center; }
 .def p { transform: rotateY(180deg); transition: 0.6s; }
 */
+.options #card p {
+    display: none;
+}
 .def.reversed p,
 .word p { font-weight:bold; }
 .word.reversed p {font-weight: normal; }
 </style>
 
 <script>
-// Copyright (c) 2018 Gamaiel Zavala. All rights reserved. Copyrights licensed under the MIT License.
+// Copyright (c) 2018-2021 Gamaiel Zavala. All rights reserved. Copyrights licensed under the MIT License.
 // See the accompanying LICENSE file for terms.
 
 (function(){
@@ -132,14 +172,11 @@ function buildQuery(params)
 
 function change(e, isReversed)
 {
+    isReversed = params.reverse || isReversed;
+
     var card = document.getElementById("card");
 
-    // ignore certain clicks
-    if (e && e.target && e.target.className === "cancel") {
-        return;
-    }
-
-    if (card.className.indexOf("word") !== -1)
+    if (card.className.indexOf("word") !== -1 || (isReversed && card.className === ""))
     {
         if (isReversed) {
             changeWord();
@@ -160,6 +197,41 @@ function change(e, isReversed)
 
     card.innerHTML = "<p>" + state.text + "</p>";
     card.className = state.cl + (isReversed ? " reversed" : "");
+}
+
+function handleClick(e)
+{
+    var el = e.target;
+
+    // ignore certain clicks
+    if (el.className.indexOf('cancel')) {
+        e.stopPropagation();
+    }
+
+    switch (true)
+    {
+        case el.name === "submit":
+            reload();
+        break;
+        case el.id === "optsbtn":
+            toggleOptions();
+        break;
+        case el.className.indexOf('prev') !== -1:
+            paginate();
+        break;
+        case el.className.indexOf('next') !== -1:
+            paginate(true);
+        break;
+        case el.id === "opts":
+        case el.className.indexOf('options') !== -1:
+        case (el.parentNode.className || "").indexOf('options') !== -1:
+            // do nothing
+        break;
+        default:
+            closeOptions();
+            change(e);
+        break;
+    }
 }
 
 function handleTouch(e)
@@ -245,8 +317,11 @@ function filter()
         words = words.slice(start, end);
     }
 
-    shuffle(words);
-    change();
+    if (words.length)
+    {
+        shuffle(words);
+        change();
+    }
 
     if (debug)
     {
@@ -281,9 +356,77 @@ function paginate(inc)
     }
 }
 
+function reload()
+{
+    var opts = {};
+    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'debug'];
+
+    optNames.forEach(function (param)
+    {
+        var val;
+        var el = document.getElementsByName(param)[0] || {};
+
+        // handle checkbox correctly
+        if (el.type === "checkbox") {
+            val = el.checked ? "1" : "";
+        } else {
+            val = el.value !== undefined ? el.value : params[param];
+        }
+
+        if (val) {
+            opts[param] = val;
+        }
+    });
+
+    location.href = "?" + buildQuery(opts);
+}
+
+function toggleOptions ()
+{
+    var el = document.getElementById("opts");
+    var wrap = document.getElementById("wrap");
+    if (wrap.className === 'options') {
+        wrap.className = '';
+        return;
+    }
+
+    var cats = '';
+    categories.forEach(function (cat) {
+        cats += '<option value="' + cat + '"' +
+            (params.category === cat ? ' selected' : '') +
+        '>' + cat + '</option>';
+    });
+
+    var isPaginated = params.start && params.count;
+    var opts = [
+        '<div class="options">',
+            isPaginated ? '<span class="nav prev">«</span>' : '',
+            cats ? '<label for="category">category</label>' : '',
+            cats ? '<select name="category" id="category">' : '',
+                cats ? '<option/>' : '',
+                cats,
+            cats ? '</select>' : '',
+            ' ',
+            '<label for="start">start</label><input name="start" id="start" size="4" value="' + (params.start || "") + '"/>',
+            '<label for="count">count</label><input name="count" id="count" size="2" value="' + (params.count || "") + '"/>',
+            '<input name="reverse" id="reverse" type="checkbox"' + (params.reverse ? " checked" : "") + '/><label for="reverse">reverse</label>',
+            '<button name="submit" type="submit">apply</button>',
+            isPaginated ? '<span class="nav next">»</span>' : '',
+        '</div>'
+    ].join("");
+
+    el.innerHTML = opts;
+    document.getElementById("wrap").className = 'options';
+}
+
+function closeOptions()
+{
+    document.getElementById("wrap").className = '';
+}
+
 window.addEventListener("load", function()
 {
-    document.addEventListener("click", change);
+    document.addEventListener("click", handleClick);
     document.addEventListener("touchend", handleTouch);
     var xhr = new XMLHttpRequest();
     var url;
@@ -350,7 +493,11 @@ window.addEventListener("keydown", function(e)
 </head>
 
 <body>
-<div id="wrap"><div id="card"></div></div>
+<div id="wrap">
+    <div id="card"></div>
+    <button id="optsbtn" class="cancel">⋮</button>
+    <div id="opts"></div>
+</div>
 </body>
 
 </html>
