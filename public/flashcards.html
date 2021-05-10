@@ -356,15 +356,14 @@ function paginate(inc)
     if (start && count)
     {
         params.start = parseInt(start, 10) + (parseInt(count, 10) * (inc ? 1 : -1));
-        location.href = "?" + buildQuery(params);
-        return true;
+        reload();
     }
 }
 
 function reload()
 {
     var opts = {};
-    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'debug'];
+    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'debug'];
 
     optNames.forEach(function (param)
     {
@@ -433,6 +432,14 @@ window.addEventListener("load", function()
 {
     document.addEventListener("click", handleClick);
     document.addEventListener("touchend", handleTouch);
+
+    if (params.cache && localStorage.tsv)
+    {
+        parse(localStorage.tsv);
+        filter();
+        return;
+    }
+
     var xhr = new XMLHttpRequest();
     var url;
     switch (params.list)
