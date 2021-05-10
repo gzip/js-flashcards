@@ -172,7 +172,12 @@ function buildQuery(params)
 
 function change(e, isReversed)
 {
-    isReversed = params.reverse || isReversed;
+    // negate reverse if param and arg are set
+    if (isReversed && params.reverse) {
+        isReversed = false;
+    } else {
+        isReversed = params.reverse === '1';
+    }
 
     var card = document.getElementById("card");
 
@@ -436,6 +441,7 @@ window.addEventListener("load", function()
             url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7x5yIEIi0HI8SaPXbF3AiukfnbLECqfIC3062w3tMCJkqoqjfGFZwy__U2j5vFrCSLPawGlOWl7Wa/pub?output=tsv";
         break;
         default:
+            // https://docs.google.com/spreadsheets/d/1BVaCFiLgM8AGSgr_XK0sEzWwHLk5unC5rVFHKPvGKtU/export?gid=0&format=tsv
             url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
     }
     xhr.open("GET", "https://gdocs-proxy.herokuapp.com/" + url, true);
