@@ -176,7 +176,7 @@ function change(e, isReversed)
     if (isReversed && params.reverse) {
         isReversed = false;
     } else {
-        isReversed = params.reverse === '1';
+        isReversed = isReversed || params.reverse === '1';
     }
 
     var card = document.getElementById("card");
