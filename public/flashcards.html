@@ -355,13 +355,15 @@ function paginate(inc)
     var count = params.count;
     if (start && count)
     {
-        params.start = parseInt(start, 10) + (parseInt(count, 10) * (inc ? 1 : -1));
-        reload();
+        var factor = inc ? 1 : -1;
+        // pass as a string to preserve 0
+        reload({start: "" + (parseInt(start, 10) + parseInt(count, 10) * factor)});
     }
 }
 
-function reload()
+function reload(vals)
 {
+    vals = vals || {};
     var opts = {};
     var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'debug'];
 
@@ -370,10 +372,14 @@ function reload()
         var val;
         var el = document.getElementsByName(param)[0] || {};
 
+        // passed in values take precedence
+        if (vals[param] !== undefined) {
+            val = vals[param];
         // handle checkbox correctly
-        if (el.type === "checkbox") {
+        } else if (el.type === "checkbox") {
             val = el.checked ? "1" : "";
         } else {
+            // use the field value if set, otherwise the query param
             val = el.value !== undefined ? el.value : params[param];
         }
 
