@@ -123,12 +123,12 @@ function setDef(incWord)
     state.text = defs[state.word] + (incWord ? [
         '<p class="word links">',
             '<a href="https://translate.google.com/#es/en/', encodeURIComponent(state.word),
-                '" target="def" class="cancel">',
+                '" target="def" class="link">',
                 state.word,
             '</a>',
             ' ',
             '<a href="http://www.spanishdict.com/translate/', encodeURIComponent(state.word),
-                '" target="sd" class="cancel">',
+                '" target="sd" class="link">',
                 '¡!',
             '</a>',
         '</p>'
@@ -209,7 +209,7 @@ function handleClick(e)
     var el = e.target;
 
     // ignore certain clicks
-    if (el.className.indexOf('cancel')) {
+    if (el.className.indexOf('cancel') !== -1) {
         e.stopPropagation();
     }
 
@@ -228,6 +228,7 @@ function handleClick(e)
             paginate(true);
         break;
         case el.id === "opts":
+        case el.className.indexOf('link') !== -1:
         case el.className.indexOf('options') !== -1:
         case (el.parentNode.className || "").indexOf('options') !== -1:
             // do nothing
