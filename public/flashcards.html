@@ -440,7 +440,9 @@ window.addEventListener("load", function()
     document.addEventListener("click", handleClick);
     document.addEventListener("touchend", handleTouch);
 
-    if (params.cache && localStorage.tsv)
+    var bypassCache = params.cache === "0"
+
+    if (params.cache && !bypassCache && localStorage.tsv)
     {
         parse(localStorage.tsv);
         filter();
@@ -459,7 +461,8 @@ window.addEventListener("load", function()
             url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
     }
     xhr.open("GET", "https://gdocs-proxy.herokuapp.com/" + url, true);
-    xhr.timeout = 3000;
+    // use a high timeout if we're trying to refresh the cache
+    xhr.timeout = bypassCache ? 10000 : 3000;
     xhr.onreadystatechange = function()
     {
         if (xhr.readyState == 4)
@@ -469,7 +472,7 @@ window.addEventListener("load", function()
             if (xhr.status === 200 && xhr.responseText) {
                 tsv = xhr.responseText;
                 localStorage.tsv = tsv;
-            } else {
+            } else if (!bypassCache){
                 tsv = localStorage.tsv;
             }
 
