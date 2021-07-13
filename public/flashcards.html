@@ -61,8 +61,8 @@ label[for=reverse] { left: 39pt; top: 77pt; }
 input[name=reverse] { left: 22pt; top: 77pt; }
 button[name=submit] { right: 75pt;top: 52pt; }
 .nav { display:block; position:absolute; top: 42px; font:20pt arial, sans-serif; color:#ccc; cursor:pointer; }
-.prev { left:-15px; }
-.next { right:-5px; }
+.prev { left:-15px; padding-right: 15px; }
+.next { right:-5px; padding-left: 15px; }
 .links { position: absolute; bottom: 12px; right: 14px; margin: 0; text-align: right; }
 .links a { font-weight:bold; text-decoration: none; color:#ccc; }
 /*
@@ -127,9 +127,14 @@ function setDef(incWord)
                 state.word,
             '</a>',
             ' ',
-            '<a href="http://www.spanishdict.com/translate/', encodeURIComponent(state.word),
+            '<a href="https://www.spanishdict.com/translate/', encodeURIComponent(state.word),
                 '" target="sd" class="link">',
                 '¡!',
+            '</a>',
+            ' ',
+            '<a href="https://context.reverso.net/translation/spanish-english/', encodeURIComponent(state.word),
+                '" target="rc" class="link">',
+                '⇆',
             '</a>',
         '</p>'
         ].join("") : "");
@@ -440,7 +445,7 @@ window.addEventListener("load", function()
     document.addEventListener("click", handleClick);
     document.addEventListener("touchend", handleTouch);
 
-    var bypassCache = params.cache === "0"
+    var bypassCache = params.cache === "0";
 
     if (params.cache && !bypassCache && localStorage.tsv)
     {
