@@ -359,11 +359,20 @@ function paginate(inc)
 {
     var start = params.start;
     var count = params.count;
-    if (start && count)
+    if (start)
     {
+        // let start determine count if not present
+        if (count === undefined) {
+            count = Math.abs(start);
+        }
+
+        // determine if we're going forwards or backwards
         var factor = inc ? 1 : -1;
+
         // pass as a string to preserve 0
-        reload({start: "" + (parseInt(start, 10) + parseInt(count, 10) * factor)});
+        reload({start: "" + (parseInt(start, 10) + parseInt(count, 10) * factor), count: count, cache: 1});
+
+        return true;
     }
 }
 
