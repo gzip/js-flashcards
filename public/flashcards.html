@@ -221,7 +221,7 @@ function handleClick(e)
     switch (true)
     {
         case el.name === "submit":
-            reload();
+            reload({refresh: 1});
         break;
         case el.id === "optsbtn":
             toggleOptions();
@@ -371,7 +371,7 @@ function reload(vals)
 {
     vals = vals || {};
     var opts = {};
-    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'debug'];
+    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'refresh', 'debug'];
 
     optNames.forEach(function (param)
     {
@@ -445,7 +445,7 @@ window.addEventListener("load", function()
     document.addEventListener("click", handleClick);
     document.addEventListener("touchend", handleTouch);
 
-    var bypassCache = params.cache === "0";
+    var bypassCache = params.cache === "0" || params.refresh === "1";
 
     if (params.cache && !bypassCache && localStorage.tsv)
     {
@@ -481,7 +481,9 @@ window.addEventListener("load", function()
                 tsv = localStorage.tsv;
             }
 
-            if (tsv) {
+            if(params.refresh) {
+              reload({refresh: tsv ? 0 : 1});
+            } else if (tsv) {
                 parse(tsv);
                 filter();
             }
