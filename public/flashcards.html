@@ -79,7 +79,7 @@ p { margin: 0 25px; }
 </style>
 
 <script>
-// Copyright (c) 2018-2021 Gamaiel Zavala. All rights reserved. Copyrights licensed under the MIT License.
+// Copyright (c) 2018-2022 Gamaiel Zavala. All rights reserved. Copyrights licensed under the MIT License.
 // See the accompanying LICENSE file for terms.
 
 (function(){
@@ -320,7 +320,7 @@ function filter()
     // handle optional start parameter
     if (start) {
         // adjust start for zero index but also allow negative numbers for slice
-        if (start !== 0) { --start; }
+        if (start > 0) { --start; }
     }
 
     // get a subset if start, count, or end was passed in
