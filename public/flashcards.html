@@ -297,21 +297,18 @@ function filter()
         line = lines[l];
 
         if ((line[SKIP] && !all) || (category && category !== line[CATEGORY])) {
-            if (debug) {
-                console.log('skipping: ', line.join("\t"));
-            }
+            //if (debug) {
+            //    console.log('skipping: ', line.join("\t"));
+            //}
             continue;
         }
 
-        if(!defs[line[WORD]])
-        {
-            defs[line[WORD]] = line[DEF];
-            words[words.length] = line[WORD];
+        if(debug && defs[line[WORD]]) {
+            console.log('found duplicate: ', line[WORD], ', old: ', defs[line[WORD]], ', new:', line[DEF]);
         }
-        else if (debug)
-        {
-            console.log('found duplicate: ', line[WORD], line[DEF]);
-        }
+
+        defs[line[WORD]] = line[DEF];
+        words.push(line[WORD]);
     }
 
     // handle optional count and end parameters; count takes precedence over end
@@ -328,17 +325,17 @@ function filter()
         words = words.slice(start, end);
     }
 
-    if (words.length)
-    {
-        shuffle(words);
-        change();
-    }
-
     if (debug)
     {
         console.log('categories: ', categories);
         console.log('words: ', words);
-        console.log('lines: ', lines);
+        //console.log('lines: ', lines);
+    }
+
+    if (words.length)
+    {
+        shuffle(words);
+        change();
     }
 }
 
