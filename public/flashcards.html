@@ -51,15 +51,17 @@ input, select, label, button { position:absolute; font:12pt arial, sans-serif; c
 label, button { display:block; }
 label { border:0; }
 input, select {  }
-label[for=category] { left:25pt;top: -3pt; }
-select[name=category] { left:25pt;top: 12pt; }
-label[for=start] { left:25pt;top: 37pt; }
-input[name=start] { left:25pt;top: 52pt; }
-label[for=count] { left: 100pt;top: 37pt; }
-input[name=count] { left: 100pt;top: 52pt; }
-label[for=reverse] { left: 39pt; top: 77pt; }
-input[name=reverse] { left: 22pt; top: 77pt; }
-button[name=submit] { right: 75pt;top: 52pt; }
+label[for=category]   { left: 83pt;  top: -3pt; }
+select[name=category] { left: 83pt;  top: 12pt; }
+label[for=timer]      { left: 25pt;  top: -3pt; }
+select[name=timer]    { left: 25pt;  top: 12pt; }
+label[for=start]      { left: 25pt;  top: 37pt; }
+input[name=start]     { left: 25pt;  top: 52pt; }
+label[for=count]      { left: 100pt; top: 37pt; }
+input[name=count]     { left: 100pt; top: 52pt; }
+label[for=reverse]    { left: 39pt;  top: 77pt; }
+input[name=reverse]   { left: 22pt;  top: 77pt; }
+button[name=submit]   { right: 75pt; top: 52pt; }
 .nav { display:block; position:absolute; top: 42px; font:20pt arial, sans-serif; color:#ccc; cursor:pointer; }
 .prev { left:-15px; padding-right: 15px; }
 .next { right:-5px; padding-left: 15px; }
@@ -92,6 +94,7 @@ var CATEGORY = 2;
 var SKIP = 3;
 
 var params = parseQuery();
+var timer = null;
 var defs = {};
 var words = [];
 var categories = [];
@@ -337,6 +340,9 @@ function filter()
         shuffle(words);
         change();
     }
+
+    // set timer if present
+    setTimer();
 }
 
 // from https://bost.ocks.org/mike/shuffle/
@@ -377,7 +383,7 @@ function reload(vals)
 {
     vals = vals || {};
     var opts = {};
-    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'refresh', 'debug'];
+    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'refresh', 'timer', 'debug'];
 
     optNames.forEach(function (param)
     {
@@ -419,6 +425,13 @@ function toggleOptions ()
         '>' + cat + '</option>';
     });
 
+    var times = '';
+    ['2', '3', '5', '7'].forEach(function (time) {
+        times += '<option value="' + time + '"' +
+            (params.timer === time ? ' selected' : '') +
+        '>' + time + 's</option>';
+    });
+
     var isPaginated = params.start && params.count;
     var opts = [
         '<div class="options">',
@@ -429,6 +442,12 @@ function toggleOptions ()
                 cats,
             cats ? '</select>' : '',
             ' ',
+            '<label for="timer">timer</label>',
+            '<select name="timer" id="timer">',
+                '<option/>',
+                times,
+            '</select>',
+            ' ',
             '<label for="start">start</label><input name="start" id="start" size="4" value="' + (params.start || "") + '"/>',
             '<label for="count">count</label><input name="count" id="count" size="2" value="' + (params.count || "") + '"/>',
             '<input name="reverse" id="reverse" type="checkbox"' + (params.reverse ? " checked" : "") + '/><label for="reverse">reverse</label>',
@@ -438,7 +457,26 @@ function toggleOptions ()
     ].join("");
 
     el.innerHTML = opts;
+    document.getElementById("timer").onchange = setTimer;
     document.getElementById("wrap").className = 'options';
+}
+
+function setTimer()
+{
+    var tEl = document.getElementById("timer");
+
+    // prioritize select box if present
+    var time = tEl ? tEl.value : params.timer;
+
+    // store timer for correct selection in select box
+    params.timer = time;
+
+    // always clear timer
+    clearInterval(timer);
+
+    if (time) {
+        timer = setInterval(change, time * 1000);
+    }
 }
 
 function closeOptions()
