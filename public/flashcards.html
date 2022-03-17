@@ -47,6 +47,16 @@
 .options #opts {
     display: block;
 }
+#playbtn {
+    top: 7px;
+    left: 8px;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+}
+.options #playbtn {
+    display: none;
+}
 input, select, label, button { position:absolute; font:12pt arial, sans-serif; color:#ccc; border:1px solid #ccc; border-radius:2px; background-color:#fff; }
 label, button { display:block; }
 label { border:0; }
@@ -229,6 +239,13 @@ function handleClick(e)
         case el.id === "optsbtn":
             toggleOptions();
         break;
+        case el.id === "playbtn":
+            if (timer) {
+                clearTimer();
+            } else {
+                setTimer();
+            }
+        break;
         case el.className.indexOf('prev') !== -1:
             paginate();
         break;
@@ -243,6 +260,7 @@ function handleClick(e)
         break;
         default:
             closeOptions();
+            setTimer();
             change(e);
         break;
     }
@@ -262,6 +280,7 @@ function handleTouch(e)
         e.preventDefault();
     }
 
+    setTimer();
     change(null, true);
 }
 
@@ -464,6 +483,7 @@ function toggleOptions ()
 function setTimer()
 {
     var tEl = document.getElementById("timer");
+    var pEl = document.getElementById("playbtn");
 
     // prioritize select box if present
     var time = tEl ? tEl.value : params.timer;
@@ -472,10 +492,22 @@ function setTimer()
     params.timer = time;
 
     // always clear timer
-    clearInterval(timer);
+    clearTimer();
 
     if (time) {
         timer = setInterval(change, time * 1000);
+        pEl.innerHTML = '⏸';
+    } else {
+        pEl.innerHTML = '';
+    }
+}
+
+function clearTimer()
+{
+    clearInterval(timer);
+    timer = null;
+    if (params.timer) {
+        document.getElementById("playbtn").innerHTML = '⏵';
     }
 }
 
@@ -569,6 +601,7 @@ window.addEventListener("keydown", function(e)
 <body>
 <div id="wrap">
     <div id="card"></div>
+    <button id="playbtn" class="cancel"></button>
     <button id="optsbtn" class="cancel">⋮</button>
     <div id="opts"></div>
 </div>
