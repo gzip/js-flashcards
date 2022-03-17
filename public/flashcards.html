@@ -522,10 +522,11 @@ window.addEventListener("load", function()
     document.addEventListener("touchend", handleTouch);
 
     var bypassCache = params.cache === "0" || params.refresh === "1";
+    var cacheKey = "tsv" + (params.list ? "." + params.list : "");
 
-    if (params.cache && !bypassCache && localStorage.tsv)
+    if (params.cache && !bypassCache && localStorage[cacheKey])
     {
-        parse(localStorage.tsv);
+        parse(localStorage[cacheKey]);
         filter();
         return;
     }
@@ -552,9 +553,9 @@ window.addEventListener("load", function()
 
             if (xhr.status === 200 && xhr.responseText) {
                 tsv = xhr.responseText;
-                localStorage.tsv = tsv;
+                localStorage[cacheKey] = tsv;
             } else if (!bypassCache){
-                tsv = localStorage.tsv;
+                tsv = localStorage[cacheKey];
             }
 
             if(params.refresh) {
