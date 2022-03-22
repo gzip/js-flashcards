@@ -237,14 +237,12 @@ function handleClick(e)
             reload({refresh: 1});
         break;
         case el.id === "optsbtn":
+            el.blur();
             toggleOptions();
         break;
         case el.id === "playbtn":
-            if (timer) {
-                clearTimer();
-            } else {
-                setTimer();
-            }
+            el.blur();
+            toggleTimer();
         break;
         case el.className.indexOf('prev') !== -1:
             paginate();
@@ -483,7 +481,6 @@ function toggleOptions ()
 function setTimer()
 {
     var tEl = document.getElementById("timer");
-    var pEl = document.getElementById("playbtn");
 
     // prioritize select box if present
     var time = tEl ? tEl.value : params.timer;
@@ -495,10 +492,17 @@ function setTimer()
     clearTimer();
 
     if (time) {
-        timer = setInterval(change, time * 1000);
-        pEl.innerHTML = '⏸';
+        startTimer();
     } else {
-        pEl.innerHTML = '';
+        document.getElementById("playbtn").innerHTML = '';
+    }
+}
+
+function startTimer()
+{
+    if (params.timer) {
+        timer = setInterval(change, params.timer * 1000);
+        document.getElementById("playbtn").innerHTML = '⏸';
     }
 }
 
@@ -508,6 +512,18 @@ function clearTimer()
     timer = null;
     if (params.timer) {
         document.getElementById("playbtn").innerHTML = '⏵';
+    }
+}
+
+function toggleTimer()
+{
+    if (params.timer)
+    {
+        if (timer) {
+            clearTimer();
+        } else {
+            startTimer();
+        }
     }
 }
 
@@ -582,12 +598,17 @@ window.addEventListener("keydown", function(e)
         case "BracketLeft":
             change(null, true);
         break;
+        case "Space":
+            if (params.timer) {
+                toggleTimer();
+                break;
+            }
+        /* falls through */
         case "ArrowRight":
             if (ctrl && paginate(true)) {
                 break;
             }
         /* falls through */
-        case "Space":
         case "Enter":
         case "BracketRight":
             change();
