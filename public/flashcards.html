@@ -220,6 +220,9 @@ function change(e, isReversed)
 
     card.innerHTML = "<p>" + state.text + "</p>";
     card.className = state.cl + (isReversed ? " reversed" : "");
+
+    // this will reset the timer if set
+    setTimer();
 }
 
 function handleClick(e)
@@ -258,7 +261,6 @@ function handleClick(e)
         break;
         default:
             closeOptions();
-            setTimer();
             change(e);
         break;
     }
@@ -278,7 +280,6 @@ function handleTouch(e)
         e.preventDefault();
     }
 
-    setTimer();
     change(null, true);
 }
 
@@ -357,9 +358,6 @@ function filter()
         shuffle(words);
         change();
     }
-
-    // set timer if present
-    setTimer();
 }
 
 // from https://bost.ocks.org/mike/shuffle/
@@ -400,7 +398,7 @@ function reload(vals)
 {
     vals = vals || {};
     var opts = {};
-    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'refresh', 'timer', 'debug'];
+    var optNames = ['list', 'category', 'start', 'count', 'reverse', 'all', 'cache', 'refresh', 'timer', 'paused', 'debug'];
 
     optNames.forEach(function (param)
     {
@@ -492,7 +490,11 @@ function setTimer()
     clearTimer();
 
     if (time) {
-        startTimer();
+        if (!params.paused) {
+            startTimer();
+        } else {
+            pauseTimer();
+        }
     } else {
         document.getElementById("playbtn").innerHTML = '';
     }
@@ -500,9 +502,11 @@ function setTimer()
 
 function startTimer()
 {
+    clearTimer();
     if (params.timer) {
         timer = setInterval(change, params.timer * 1000);
-        document.getElementById("playbtn").innerHTML = '⏸';
+        document.getElementById("playbtn").innerHTML = '\u23F8'; // ⏸ &#9208;
+        params.paused = false;
     }
 }
 
@@ -510,8 +514,14 @@ function clearTimer()
 {
     clearInterval(timer);
     timer = null;
+}
+
+function pauseTimer()
+{
+    clearTimer();
     if (params.timer) {
-        document.getElementById("playbtn").innerHTML = '⏵';
+        document.getElementById("playbtn").innerHTML = '\u23F5'; // ⏵ &#9205;
+        params.paused = 1; // use int val for query param
     }
 }
 
@@ -520,7 +530,7 @@ function toggleTimer()
     if (params.timer)
     {
         if (timer) {
-            clearTimer();
+            pauseTimer();
         } else {
             startTimer();
         }
