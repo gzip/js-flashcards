@@ -476,12 +476,12 @@ function toggleOptions ()
     document.getElementById("wrap").className = 'options';
 }
 
-function setTimer()
+function setTimer(t)
 {
     var tEl = document.getElementById("timer");
 
     // prioritize select box if present
-    var time = tEl ? tEl.value : params.timer;
+    var time = t === undefined ? (tEl ? tEl.value : params.timer) : t;
 
     // store timer for correct selection in select box
     params.timer = time;
@@ -495,8 +495,6 @@ function setTimer()
         } else {
             pauseTimer();
         }
-    } else {
-        document.getElementById("playbtn").innerHTML = '';
     }
 }
 
@@ -512,6 +510,7 @@ function startTimer()
 
 function clearTimer()
 {
+    document.getElementById("playbtn").innerHTML = '';
     clearInterval(timer);
     timer = null;
 }
@@ -625,6 +624,15 @@ window.addEventListener("keydown", function(e)
         break;
         case "Escape":
             toggleOptions();
+        break;
+        case "Digit0":
+            setTimer(null);
+        break;
+        case "Digit2":
+        case "Digit3":
+        case "Digit5":
+        case "Digit7":
+            setTimer(e.key);
         break;
     }
 });
