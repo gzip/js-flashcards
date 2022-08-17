@@ -72,7 +72,7 @@ input[name=count]     { left: 100pt; top: 52pt; }
 label[for=reverse]    { left: 39pt;  top: 77pt; }
 input[name=reverse]   { left: 22pt;  top: 77pt; }
 button[name=submit]   { right: 75pt; top: 52pt; }
-.nav { display:block; position:absolute; top: 42px; font:20pt arial, sans-serif; color:#ccc; cursor:pointer; }
+.nav { display:block; position:absolute; padding:42px 0; font:20pt arial, sans-serif; color:#ccc; border:0; cursor:pointer; }
 .prev { left:-15px; padding-right: 15px; }
 .next { right:-5px; padding-left: 15px; }
 .links { position: absolute; bottom: 12px; right: 14px; margin: 0; text-align: right; }
@@ -450,24 +450,24 @@ function toggleOptions ()
     var isPaginated = params.start && params.count;
     var opts = [
         '<div class="options">',
-            isPaginated ? '<span class="nav prev">«</span>' : '',
-            cats ? '<label for="category">category</label>' : '',
-            cats ? '<select name="category" id="category">' : '',
-                cats ? '<option/>' : '',
-                cats,
-            cats ? '</select>' : '',
-            ' ',
+            isPaginated ? '<button class="nav prev">«</button> <button class="nav next">»</button>' : '',
             '<label for="timer">timer</label>',
             '<select name="timer" id="timer">',
                 '<option/>',
                 times,
             '</select>',
             ' ',
+            cats ?
+                '<label for="category">category</label>' +
+                '<select name="category" id="category">' +
+                    '<option/>' +
+                    cats +
+                '</select>' : '',
+            ' ',
             '<label for="start">start</label><input name="start" id="start" size="4" value="' + (params.start || "") + '"/>',
             '<label for="count">count</label><input name="count" id="count" size="2" value="' + (params.count || "") + '"/>',
             '<input name="reverse" id="reverse" type="checkbox"' + (params.reverse ? " checked" : "") + '/><label for="reverse">reverse</label>',
             '<button name="submit" type="submit">apply</button>',
-            isPaginated ? '<span class="nav next">»</span>' : '',
         '</div>'
     ].join("");
 
