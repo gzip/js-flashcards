@@ -567,7 +567,7 @@ window.addEventListener("load", function()
             // https://docs.google.com/spreadsheets/d/1BVaCFiLgM8AGSgr_XK0sEzWwHLk5unC5rVFHKPvGKtU/export?gid=0&format=tsv
             url = "/spreadsheets/d/e/2PACX-1vT805xK9V_x6L9ueufwy-c4uoVqU0BjzgnFY7bpwEUshAuicHn65Bi4z13gZlhbnutQFeuhC_lqdSfw/pub?gid=0&single=true&output=tsv";
     }
-    xhr.open("GET", "https://gdocs-proxy.gzipped.com" + url, true);
+    xhr.open("GET", "https://flashcards.gzipped.com" + url, true);
     // use a high timeout if we're trying to refresh the cache
     xhr.timeout = bypassCache ? 10000 : 3000;
     xhr.onreadystatechange = function()
